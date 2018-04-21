@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+    <title>Palindrome Test with NodeJS API</title>
+  </head>
+  <body>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <hr>
+                <h3>Verify if word or sentence is a palindrome:</h3>
+                <h4>In this version, using a NodeJS API for verification.</h4>
+
+                <!-- PALINDROME CHECK FORM -->
+                <form id="id_form" autocomplete="off">
+                    <label for="id_string">Word / sentence:</label>
+                    <input type="text" class="form-control" id="id_string" placeholder="Type word or sentence...">
+                    <hr>
+                    <label for="id_result">Result:</label>
+                    <input type="text" id="id_result" disabled>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery requirement for POST handling -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <script type="text/javascript">        
+        // Dinamically update the result through these bindings
+        var form = document.getElementById("id_form")
+        var input = document.getElementById("id_string");
+        form.addEventListener('submit', e => e.preventDefault());
+        form.addEventListener('submit', () => checkInputs());
+        form.addEventListener('change', () => checkInputs());
+        input.addEventListener('keyup', () => checkInputs());
+        
+        var in_result = document.getElementById('id_result');
+
+        function checkInputs() {
+            // Gathers data and calls isPalindrome.
+    
+            let string = input.value;
+            
+            in_result.value = '...';
+            isPalindrome(string, update_value);
+        }
+
+        function update_value(result) {
+            // Callback for waiting the post result
+
+            in_result.value = result ? 'Yes, it is a palindrome.' : 'No palindrome.';
+        }
+
+        function isPalindrome (string, update_value) {
+            // Checks if the string is palindrome. 
+            
+            response = $.ajax({
+                type: 'POST',
+                url: "/verify_palindrome",
+                timeout: 5000,
+                cache: false,
+                statusCode: {
+                    200: () => update_value(true),
+                    400: () => update_value(false)
+                },
+                error: e => in_result.value = 'Error connecting to API',
+                success: update_value,
+                data: {
+                    'string': string
+                }
+            });
+        }
+    </script>
+
+  </body>
+</html>
